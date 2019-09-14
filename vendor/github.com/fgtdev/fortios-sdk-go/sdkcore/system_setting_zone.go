@@ -8,114 +8,67 @@ import (
 	"log"
 )
 
-//DomainMultValue Section
-type DomainMultValue struct {
-	Domain string `json:"domain"`
+type ZoneMultiValue struct {
+	InterfaceName string `json:"interface-name"`
 }
 
-//DomainsMultValues Sections
-type DomainsMultValues []DomainMultValue
+type ZoneMultiValues []ZoneMultiValue
 
-// ExpandDomain extracts Domain value from result and put them into a string array,
+// ExpandZone extracts Zone value from result and put them into a string array,
 // and return the string array
-func ExpandDomain(members []DomainMultValue) []string {
+func ExpandZone(members []ZoneMultiValue) []string {
 	vs := make([]string, 0, len(members))
 	for _, v := range members {
-		c := v.Domain
+		c := v.InterfaceName
 		vs = append(vs, c)
 	}
 	return vs
 }
 
-// JSONSystemSettingDNS contains the parameters for Create and Update API function
-type JSONSystemSettingDNS struct {
-	Primary   string            `json:"primary"`
-	Secondary string            `json:"secondary"`
-	Domain    DomainsMultValues `json:"domain"`
+// JSONSystemZone contains the parameters for Create and Update API function
+type JSONSystemZone struct {
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Intrazone   string          `json:"intrazone"`
+	Interface   ZoneMultiValues `json:"interface"`
 }
 
-// JSONCreateSystemSettingDNSOutput contains the output results for Create API function
-type JSONCreateSystemSettingDNSOutput struct {
+// JSONCreateSystemZoneOutput contains the output results for Create API function
+type JSONCreateSystemZoneOutput struct {
 	Vdom       string  `json:"vdom"`
 	Mkey       string  `json:"mkey"`
 	Status     string  `json:"status"`
 	HTTPStatus float64 `json:"http_status"`
 }
 
-// JSONUpdateSystemSettingDNSOutput contains the output results for Update API function
+// JSONUpdateSystemZoneOutput contains the output results for Update API function
 // Attention: Considering scalability, the previous structure and the current structure may change differently
-type JSONUpdateSystemSettingDNSOutput struct {
+type JSONUpdateSystemZoneOutput struct {
 	Vdom       string  `json:"vdom"`
 	Mkey       string  `json:"mkey"`
 	Status     string  `json:"status"`
 	HTTPStatus float64 `json:"http_status"`
 }
 
-// CreateSystemSettingDNS API operation for FortiOS
-func (c *FortiSDKClient) CreateSystemSettingDNS(params *JSONSystemSettingDNS) (output *JSONCreateSystemSettingDNSOutput, err error) {
-	// HTTPMethod := "POST"
-	// path := "/api/v2/cmdb/system/dns"
-	// output = &JSONCreateSystemSettingDNSOutput{}
-	// locJSON, err := json.Marshal(params)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
-	// bytes := bytes.NewBuffer(locJSON)
-	// req := c.NewRequest(HTTPMethod, path, nil, bytes)
-	// err = req.Send()
-
-	// body, err := ioutil.ReadAll(req.HTTPResponse.Body)
-
-	// var result map[string]interface{}
-	// json.Unmarshal([]byte(string(body)), &result)
-
-	// req.HTTPResponse.Body.Close()
-
-	// if result != nil {
-	// 	if result["vdom"] != nil {
-	// 		output.Vdom = result["vdom"].(string)
-	// 	}
-	// 	if result["mkey"] != nil {
-	// 		output.Mkey = result["mkey"].(string)
-	// 	}
-	// 	if result["status"] != nil {
-	//		if result["status"] != "success" {
-	//			err = fmt.Errorf("cannot get the right response")
-	//			return
-	//		}
-	// 		output.Status = result["status"].(string)
-	// 	} else {
-	// 		err = fmt.Errorf("cannot get the right response")
-	// 		return
-	// 	}
-	// 	if result["http_status"] != nil {
-	// 		output.HTTPStatus = result["http_status"].(float64)
-	// 	}
-	// } else {
-	// 	err = fmt.Errorf("cannot get the right response")
-	// 	return
-	// }
-
+// CreateSystemZone API operation for FortiOS
+func (c *FortiSDKClient) CreateSystemZone(params *JSONSystemZone) (output *JSONCreateSystemZoneOutput, err error) {
 	return
 }
 
-// UpdateSystemSettingDNS API operation for FortiOS set the dns server.
+// UpdateSystemZone API operation for FortiOS set the dns server.
 // Returns the execution result when the request executes successfully.
 // Returns error for service API and SDK errors.
 // See the system - dns chapter in the FortiOS Handbook - CLI Reference.
-func (c *FortiSDKClient) UpdateSystemSettingDNS(params *JSONSystemSettingDNS, mkey string) (output *JSONUpdateSystemSettingDNSOutput, err error) {
-	HTTPMethod := "PUT"
-	path := "/api/v2/cmdb/system/dns"
-	// path += "/" + mkey
-	output = &JSONUpdateSystemSettingDNSOutput{}
+func (c *FortiSDKClient) UpdateSystemZone(params *JSONSystemZone, mkey string) (output *JSONUpdateSystemZoneOutput, err error) {
+	HTTPMethod := "POST"
+	path := "/api/v2/cmdb/system/zone"
+
+	output = &JSONUpdateSystemZoneOutput{}
 	locJSON, err := json.Marshal(params)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-
 	bytes := bytes.NewBuffer(locJSON)
 	req := c.NewRequest(HTTPMethod, path, nil, bytes)
 	err = req.Send()
@@ -173,55 +126,23 @@ func (c *FortiSDKClient) UpdateSystemSettingDNS(params *JSONSystemSettingDNS, mk
 	}
 
 	return
+
 }
 
-// DeleteSystemSettingDNS API operation for FortiOS
-func (c *FortiSDKClient) DeleteSystemSettingDNS(mkey string) (err error) {
-	// HTTPMethod := "DELETE"
-	// path := "/api/v2/cmdb/system/dns"
-	// // path += "/" + mkey
-
-	// req := c.NewRequest(HTTPMethod, path, nil, nil)
-	// err = req.Send()
-
-	// body, err := ioutil.ReadAll(req.HTTPResponse.Body)
-	// log.Printf("FOS-fortios response: %s", string(body))
-
-	// var result map[string]interface{}
-	// json.Unmarshal([]byte(string(body)), &result)
-
-	// req.HTTPResponse.Body.Close()
-
-	// if result != nil {
-	// 	if result["status"] == nil {
-	// 		err = fmt.Errorf("cannot get the right response")
-	// 		return
-	// 	}
-	//
-	// 	if result["status"] != "success" {
-	// 		err = fmt.Errorf("cannot get the right response")
-	// 		return
-	// 	}
-	//
-	// } else {
-	// 	err = fmt.Errorf("cannot get the right response")
-	// 	return
-	// }
-
+// DeleteSystemZone API operation for FortiOS
+func (c *FortiSDKClient) DeleteSystemZone(mkey string) (err error) {
 	return
 }
 
-// ReadSystemSettingDNS API operation for FortiOS gets the dns server setting.
+// ReadSystemZone API operation for FortiOS gets the dns server setting.
 // Returns the requested dns server value when the request executes successfully.
 // Returns error for service API and SDK errors.
 // See the system - dns chapter in the FortiOS Handbook - CLI Reference.
-func (c *FortiSDKClient) ReadSystemSettingDNS(mkey string) (output *JSONSystemSettingDNS, err error) {
+func (c *FortiSDKClient) ReadSystemZone(mkey string) (output *JSONSystemZone, err error) {
 	HTTPMethod := "GET"
-	path := "/api/v2/cmdb/system/dns"
-	// path += "/" + mkey
+	path := "/api/v2/cmdb/system/zone"
 
-	output = &JSONSystemSettingDNS{}
-
+	output = &JSONSystemZone{}
 	req := c.NewRequest(HTTPMethod, path, nil, nil)
 	err = req.Send()
 	if err != nil || req.HTTPResponse == nil {
@@ -272,39 +193,41 @@ func (c *FortiSDKClient) ReadSystemSettingDNS(mkey string) (output *JSONSystemSe
 
 			return
 		}
-
-		mapTmp := (result["results"].(map[string]interface{}))
+		mapTmp := (result["results"].([]interface{}))[0].(map[string]interface{})
 
 		if mapTmp == nil {
 			err = fmt.Errorf("cannot get the results from the response")
 			return
 		}
 
-		if mapTmp["primary"] != nil {
-			output.Primary = mapTmp["primary"].(string)
+		if mapTmp["name"] != nil {
+			output.Name = mapTmp["name"].(string)
 		}
-		if mapTmp["secondary"] != nil {
-			output.Secondary = mapTmp["secondary"].(string)
+		if mapTmp["description"] != nil {
+			output.Description = mapTmp["description"].(string)
 		}
-		if mapTmp["domain"] != nil {
-			member := mapTmp["domain"].([]interface{})
+		if mapTmp["intrazone"] != nil {
+			output.Intrazone = mapTmp["intrazone"].(string)
+		}
+		if mapTmp["interface"] != nil {
+			member := mapTmp["interface"].([]interface{})
 
-			var members []DomainMultValue
+			var members []ZoneMultiValue
 			for _, v := range member {
 				c := v.(map[string]interface{})
 
 				members = append(members,
-					DomainMultValue{
-						Domain: c["domain"].(string),
+					ZoneMultiValue{
+						InterfaceName: c["interface-name"].(string),
 					})
+				output.Interface = members
 			}
-			output.Domain = members
 		}
-
 	} else {
 		err = fmt.Errorf("cannot get the right response")
 		return
 	}
 
 	return
+
 }
